@@ -1,13 +1,10 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "db.js",
- "scripts": {
-  "start": "react-scripts start",
-  "build": "react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject"
-},
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
