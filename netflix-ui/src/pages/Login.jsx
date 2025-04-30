@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-import { firebaseAuth } from "../utils/firebase-config";
 import BackgroundImage from "../components/BackgroundImage";
 import Header from "../components/Header";
-import Footer from '../Footer/Footer';
-import {  toast } from "react-toastify";
+import Footer from "../Footer/Footer";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
@@ -15,25 +13,31 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(firebaseAuth, email, password);
-      toast.success("Signin successful! Welcome aboard!");
+      const response = await fetch("https://netflix-clone-mern-7.onrender.com/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
+      const data = await response.json();
+
+      if (data.success) {
+        toast.success("Signin successful! Welcome aboard!");
+        navigate("/");  // Redirect to home page
+      } else {
+        toast.error("Signin failed. Please try again.");
+      }
     } catch (error) {
-      console.log(error.code);
+      console.log(error);
       toast.error("Signin failed. Please try again.");
-
     }
   };
-
-  onAuthStateChanged(firebaseAuth, (currentUser) => {
-    if (currentUser) navigate("/");
-  });
 
   return (
     <div className="relative min-h-screen">
       <BackgroundImage />
       <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-50 flex flex-col justify-between">
-        <Header  />
+        <Header />
         <div className="flex flex-col items-center justify-center h-full px-4 md:px-0">
           <div className="bg-black bg-opacity-70 w-full max-w-xl rounded-lg p-8">
             <div className="text-white text-2xl font-bold mb-6">Sign In</div>
