@@ -4,8 +4,9 @@ import BackgroundImage from "../components/BackgroundImage";
 import Header from "../components/Header";
 import Footer from "../Footer/Footer";
 import Developers from "../components/Developers";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { firebaseAuth } from "../utils/firebase-config";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -15,23 +16,12 @@ export default function Signup() {
 
   const handleSignUp = async () => {
     try {
-      const response = await fetch("https://netflix-clone-mern-7.onrender.com/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success("Signup successful! Welcome aboard!");
-        navigate("/login"); // Redirect to login page
-      } else {
-        toast.error("Signup failed. Please try again.");
-      }
+      await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      toast.success("Signup successful! Welcome aboard!");
+      navigate("/login");
     } catch (error) {
-      console.log(error);
-      toast.error("Signup failed. Please try again.");
+      console.error(error);
+      toast.error(error.message); // Shows specific Firebase error
     }
   };
 
@@ -46,9 +36,12 @@ export default function Signup() {
               <h1 className="text-4xl font-bold mb-4 text-white">
                 Unlimited movies, TV shows and more.
               </h1>
-              <h4 className="text-2xl mb-4 text-white">Watch anywhere. Cancel anytime.</h4>
+              <h4 className="text-2xl mb-4 text-white">
+                Watch anywhere. Cancel anytime.
+              </h4>
               <h6 className="text-xl mb-8 text-white">
-                Ready to watch? Enter your email to create or restart membership.
+                Ready to watch? Enter your email to create or restart
+                membership.
               </h6>
             </div>
             <div className="form w-full max-w-md">
@@ -71,7 +64,7 @@ export default function Signup() {
               {!showPassword && (
                 <button
                   onClick={() => setShowPassword(true)}
-                  className="block w-full p-4 mb-4 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-blue-500 focus:border-blue-500"
+                  className="block w-full p-4 mb-4 bg-red-600 text-white rounded-lg hover:bg-red-700"
                 >
                   Get Started
                 </button>
@@ -79,7 +72,7 @@ export default function Signup() {
               {showPassword && (
                 <button
                   onClick={handleSignUp}
-                  className="block w-full p-4 mb-4 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-blue-500 focus:border-blue-500"
+                  className="block w-full p-4 mb-4 bg-red-600 text-white rounded-lg hover:bg-red-700"
                 >
                   Sign Up
                 </button>

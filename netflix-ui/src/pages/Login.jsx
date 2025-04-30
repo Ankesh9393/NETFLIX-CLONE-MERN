@@ -4,7 +4,8 @@ import BackgroundImage from "../components/BackgroundImage";
 import Header from "../components/Header";
 import Footer from "../Footer/Footer";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { firebaseAuth } from "../utils/firebase-config";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -13,23 +14,12 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("https://netflix-clone-mern-7.onrender.com/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success("Signin successful! Welcome aboard!");
-        navigate("/");  // Redirect to home page
-      } else {
-        toast.error("Signin failed. Please try again.");
-      }
+      await signInWithEmailAndPassword(firebaseAuth, email, password);
+      toast.success("Signin successful! Welcome aboard!");
+      navigate("/"); // Redirect to homepage
     } catch (error) {
-      console.log(error);
-      toast.error("Signin failed. Please try again.");
+      console.error(error);
+      toast.error(error.message); // Shows specific Firebase error (e.g., user not found)
     }
   };
 
@@ -43,7 +33,7 @@ function Login() {
             <div className="text-white text-2xl font-bold mb-6">Sign In</div>
             <div className="flex flex-col gap-4">
               <input
-                type="text"
+                type="email"
                 placeholder="Email"
                 onChange={(e) => setEmail(e.target.value)}
                 value={email}
@@ -67,7 +57,7 @@ function Login() {
             </div>
             <div className="text-white mt-4">
               New to Netflix?{" "}
-              <Link to='/signup' className="text-red-600">
+              <Link to="/signup" className="text-red-600">
                 Sign up now.
               </Link>
               <br />
